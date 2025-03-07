@@ -17,7 +17,7 @@
 		},
 		"web_nyc_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://d37ci6vzurychx.cloudfront.net/"
+			"defaultValue": "https://d37ci6vzurychx.cloudfront.net"
 		}
 	},
 	"variables": {
@@ -33,6 +33,8 @@
 					{
 						"name": "Copy data1",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -86,6 +88,83 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@range(1,12)",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "ParquetSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "ParquetReadSettings"
+											}
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "ParquetWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "nyc_source_Dataset",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_month": {
+													"value": "@item()",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "nyc_sink_dataset",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -141,12 +220,20 @@
 					"referenceName": "web_nyc",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"p_month": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "HttpServerLocation",
-						"relativeUrl": "trip-data/green_tripdata_2023-01.parquet"
+						"relativeUrl": {
+							"value": "trip-data/green_tripdata_2023-0@(dataset().p_month).parquet",
+							"type": "Expression"
+						}
 					},
 					"compressionCodec": "snappy"
 				},

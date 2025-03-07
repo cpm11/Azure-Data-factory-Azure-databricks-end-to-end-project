@@ -12,7 +12,7 @@
 			"value": "https://synapsedatafactdemo.dfs.core.windows.net/"
 		},
 		"web_nyc_properties_typeProperties_url": {
-			"value": "https://d37ci6vzurychx.cloudfront.net/"
+			"value": "https://d37ci6vzurychx.cloudfront.net"
 		}
 	}
 }

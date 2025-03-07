@@ -17,7 +17,7 @@
 		},
 		"web_nyc_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://d37ci6vzurychx.cloudfront.net/"
+			"defaultValue": "https://d37ci6vzurychx.cloudfront.net"
 		},
 		"containerUri": {
 			"type": "string",
