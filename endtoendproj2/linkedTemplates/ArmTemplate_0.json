@@ -116,6 +116,38 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/nyc_monthgreaterthan9')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "web_nyc",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_monthgreaterthan9": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "trip-data/green_tripdata_2023-@{dataset().p_monthgreaterthan9}.parquet",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/web_nyc')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/endtonedproj2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -193,66 +225,144 @@
 							"isSequential": true,
 							"activities": [
 								{
-									"name": "Copy data1_copy1",
-									"type": "Copy",
+									"name": "If Condition1",
+									"type": "IfCondition",
 									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
 									"userProperties": [],
 									"typeProperties": {
-										"source": {
-											"type": "ParquetSource",
-											"storeSettings": {
-												"type": "HttpReadSettings",
-												"requestMethod": "GET"
-											},
-											"formatSettings": {
-												"type": "ParquetReadSettings"
-											}
+										"expression": {
+											"value": "@greater(item(),9)",
+											"type": "Expression"
 										},
-										"sink": {
-											"type": "ParquetSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "ParquetWriteSettings"
+										"ifFalseActivities": [
+											{
+												"name": "Copy data1_copy1",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "ParquetSource",
+														"storeSettings": {
+															"type": "HttpReadSettings",
+															"requestMethod": "GET"
+														},
+														"formatSettings": {
+															"type": "ParquetReadSettings"
+														}
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "nyc_source_Dataset",
+														"type": "DatasetReference",
+														"parameters": {
+															"p_month": {
+																"value": "@item()",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "nyc_sink_dataset",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
 											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
+										],
+										"ifTrueActivities": [
+											{
+												"name": "nyc_greaterthan9",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "ParquetSource",
+														"storeSettings": {
+															"type": "HttpReadSettings",
+															"requestMethod": "GET"
+														},
+														"formatSettings": {
+															"type": "ParquetReadSettings"
+														}
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "nyc_monthgreaterthan9",
+														"type": "DatasetReference",
+														"parameters": {
+															"p_monthgreaterthan9": {
+																"value": "@item()",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "nyc_sink_dataset",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
 											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "nyc_source_Dataset",
-											"type": "DatasetReference",
-											"parameters": {
-												"p_month": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "nyc_sink_dataset",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
+										]
+									}
 								}
 							]
 						}
@@ -265,7 +375,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/nyc_source_Dataset')]",
-				"[concat(variables('factoryId'), '/datasets/nyc_sink_dataset')]"
+				"[concat(variables('factoryId'), '/datasets/nyc_sink_dataset')]",
+				"[concat(variables('factoryId'), '/datasets/nyc_monthgreaterthan9')]"
 			]
 		}
 	]
