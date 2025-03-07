@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "endtoendproj2"
+		},
+		"datalakeendtoend2_accountKey": {
+			"value": ""
+		},
+		"datalakeendtoend2_properties_typeProperties_url": {
+			"value": "https://synapsedatafactdemo.dfs.core.windows.net/"
+		},
+		"web_nyc_properties_typeProperties_url": {
+			"value": "https://d37ci6vzurychx.cloudfront.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
