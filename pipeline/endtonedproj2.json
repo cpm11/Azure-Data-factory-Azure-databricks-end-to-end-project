@@ -190,7 +190,13 @@
 										"inputs": [
 											{
 												"referenceName": "nyc_monthgreaterthan9",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"p_monthgreaterthan9": {
+														"value": "@item()",
+														"type": "Expression"
+													}
+												}
 											}
 										],
 										"outputs": [
