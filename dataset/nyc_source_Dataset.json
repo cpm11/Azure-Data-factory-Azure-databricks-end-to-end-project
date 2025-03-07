@@ -1,0 +1,19 @@
+{
+	"name": "nyc_source_Dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "web_nyc",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "trip-data/green_tripdata_2023-01.parquet"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
