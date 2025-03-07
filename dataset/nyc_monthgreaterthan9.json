@@ -1,0 +1,27 @@
+{
+	"name": "nyc_monthgreaterthan9",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "web_nyc",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_monthgreaterthan9": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "trip-data/green_tripdata_2023-@{dataset().p_monthgreaterthan9}.parquet",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
